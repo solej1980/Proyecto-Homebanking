@@ -2,14 +2,18 @@ package com.mindhub.homebanking;
 
 import com.mindhub.homebanking.models.Account;
 import com.mindhub.homebanking.models.Client;
+import com.mindhub.homebanking.models.Transaction;
+import com.mindhub.homebanking.models.TransactionType;
 import com.mindhub.homebanking.repositories.AccountRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
+import com.mindhub.homebanking.repositories.TransactionRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @SpringBootApplication
 public class HomebankingApplication {
@@ -18,7 +22,7 @@ public class HomebankingApplication {
 		SpringApplication.run(HomebankingApplication.class);
 	}
 	@Bean
-	public CommandLineRunner initData(ClientRepository clientRepository, AccountRepository accountRepository){
+	public CommandLineRunner initData(ClientRepository clientRepository, AccountRepository accountRepository, TransactionRepository transactionRepository){
 		return (args ->{
 			Client client1 = new Client("Melba", "Morel", "melba@mindhub.com");
 			clientRepository.save(client1);
@@ -30,7 +34,27 @@ public class HomebankingApplication {
 			accountRepository.save(account2);
 			clientRepository.save(client1);
 
+			Client client2 = new Client("Maria", "Perez", "mperez@gmail.com");
+			clientRepository.save(client2);
+			Account account3 = new Account("VIN003", LocalDate.now().plusDays(1), 10000);
+			client2.addAccount(account3);
+			accountRepository.save(account3);
+			clientRepository.save(client2);
 
+			Transaction transaction1 = new Transaction(TransactionType.DEBIT, 547.90,"Google *youtube", LocalDateTime.now());
+			Transaction transaction2 = new Transaction(TransactionType.CREDIT, 5000, "Transfer", LocalDateTime.now());
+			Transaction transaction3 = new Transaction(TransactionType.CREDIT, 30000,"Deposit", LocalDateTime.now());
+			Transaction transaction4 = new Transaction(TransactionType.DEBIT, 500, "ATM WDW ATM CASH", LocalDateTime.now());
+
+
+			account1.addTransaction(transaction1);
+			account2.addTransaction(transaction2);
+			account3.addTransaction(transaction3);
+			account3.addTransaction(transaction4);
+			transactionRepository.save(transaction1);
+			transactionRepository.save(transaction2);
+			transactionRepository.save(transaction3);
+			transactionRepository.save(transaction4);
 		});
 
 	}
