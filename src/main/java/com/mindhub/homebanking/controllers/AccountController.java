@@ -20,14 +20,14 @@ import static java.util.stream.Collectors.toList;
 
 public class AccountController {
     @Autowired
-    private AccountRepository repo;
+    private AccountRepository accountRepository;
     @RequestMapping("/accounts")
     public Set<AccountDTO> getAccounts() {
-        return repo.findAll().stream().map(account -> new AccountDTO(account)).collect(Collectors.toSet());
+        return accountRepository.findAll().stream().map(account -> new AccountDTO(account)).collect(Collectors.toSet());
     }
 
     @RequestMapping("/accounts/{id}")
     public AccountDTO getAccount(@PathVariable Long id) {
-        return repo.findById(id).map(account -> new AccountDTO(account)).orElse(null);
+        return accountRepository.findById(id).map(account -> new AccountDTO(account)).orElse(null);
     }
 }
