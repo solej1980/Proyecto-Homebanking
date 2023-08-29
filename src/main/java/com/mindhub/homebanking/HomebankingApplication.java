@@ -28,8 +28,8 @@ public class HomebankingApplication {
 		return (args ->{
 			Client client1 = new Client("Melba", "Morel", "melba@mindhub.com", passwordEncoder.encode("123456"));
 			clientRepository.save(client1);
-			Account account1 = new Account("VIN001", LocalDate.now(), 5000 );
-			Account account2 = new Account("VIN002", LocalDate.now().plusDays(1), 7500);
+			Account account1 = new Account("VIN-001", LocalDate.now(), 5000 );
+			Account account2 = new Account("VIN-002", LocalDate.now().plusDays(1), 7500);
 			client1.addAccount(account1);
 			client1.addAccount(account2);
 			accountRepository.save(account1);
@@ -38,10 +38,13 @@ public class HomebankingApplication {
 
 			Client client2 = new Client("Maria", "Perez", "perez@gmail.com", passwordEncoder.encode("123456"));
 			clientRepository.save(client2);
-			Account account3 = new Account("VIN003", LocalDate.now().plusDays(1), 10000);
+			Account account3 = new Account("VIN-003", LocalDate.now().plusDays(1), 10000);
 			client2.addAccount(account3);
 			accountRepository.save(account3);
 			clientRepository.save(client2);
+
+			Client client3 = new Client( "Admin", "Admin", "admin@admin.com", passwordEncoder.encode("123456"));
+			clientRepository.save(client3);
 
 			Transaction transaction1 = new Transaction(TransactionType.DEBIT, 547.90,"Google *youtube", LocalDateTime.now());
 			Transaction transaction2 = new Transaction(TransactionType.CREDIT, 5000, "Transfer", LocalDateTime.now());
