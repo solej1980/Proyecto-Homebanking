@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -71,6 +72,11 @@ public class AccountController {
             }else{
                 return new ResponseEntity<>("You already have 3 accounts", HttpStatus.FORBIDDEN);
             }
+    }
+    @RequestMapping("/clients/current/accounts")
+    public List<AccountDTO> getAccountsCurrentClient(Authentication authentication) {
+        Client currentClient = clientRepository.findByEmail(authentication.getName());
+        return currentClient.getAccounts().stream().map(account -> new AccountDTO(account)).collect(Collectors.toList());
     }
 
 

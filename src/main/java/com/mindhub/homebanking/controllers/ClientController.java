@@ -1,6 +1,6 @@
 package com.mindhub.homebanking.controllers;
 
-import com.mindhub.homebanking.dtos.AccountDTO;
+
 import com.mindhub.homebanking.dtos.ClientDTO;
 import com.mindhub.homebanking.models.Account;
 import com.mindhub.homebanking.models.Client;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
+
 
 
 import static java.util.stream.Collectors.toList;
@@ -57,20 +57,20 @@ public class ClientController {
 
 
     @RequestMapping( path = "/clients", method = RequestMethod.POST)
-    public ResponseEntity<Object> register(
+    public ResponseEntity<Object> register(@RequestParam String firstName,
+                                           @RequestParam String lastName,
+                                           @RequestParam String email,
+                                           @RequestParam String password) {
 
-            @RequestParam String firstName, @RequestParam String lastName,
-
-            @RequestParam String email, @RequestParam String password) {
-
-
-
-        if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty()) {
-
-            return new ResponseEntity<>("Missing data", HttpStatus.FORBIDDEN);
-
+        if(firstName.isEmpty()) {
+            return new ResponseEntity<>("First name is required",HttpStatus.FORBIDDEN);
+        } else if (lastName.isEmpty()) {
+            return new ResponseEntity<>("Last name is required", HttpStatus.FORBIDDEN);
+        } else if (email.isEmpty()) {
+            return new ResponseEntity<>("E-mail is required", HttpStatus.FORBIDDEN);
+        } else if (password.isEmpty()) {
+            return new ResponseEntity<>("Password is required", HttpStatus.FORBIDDEN);
         }
-
 
 
         if (clientRepository.findByEmail(email) !=  null) {
