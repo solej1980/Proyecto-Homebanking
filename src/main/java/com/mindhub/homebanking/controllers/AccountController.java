@@ -3,17 +3,13 @@ package com.mindhub.homebanking.controllers;
 import com.mindhub.homebanking.dtos.AccountDTO;
 import com.mindhub.homebanking.models.Account;
 import com.mindhub.homebanking.models.Client;
-import com.mindhub.homebanking.repositories.AccountRepository;
-import com.mindhub.homebanking.repositories.ClientRepository;
+import com.mindhub.homebanking.services.AccountService;
+import com.mindhub.homebanking.services.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
@@ -27,18 +23,18 @@ import java.util.stream.Collectors;
 
 public class AccountController {
     @Autowired
-    private AccountRepository accountRepository;
+    private AccountService accountService;
 
     @Autowired
-    private ClientRepository clientRepository;
+    private ClientService clientService;
     @RequestMapping("/accounts")
     public Set<AccountDTO> getAccounts() {
-        return accountRepository.findAll().stream().map(account -> new AccountDTO(account)).collect(Collectors.toSet());
+        return accountService.getAllAccounts();
     }
 
     @RequestMapping("/accounts/{id}")
     public AccountDTO getAccount(@PathVariable Long id) {
-        return accountRepository.findById(id).map(account -> new AccountDTO(account)).orElse(null);
+        return accountService.getAccountDTOById(id);
     }
 
 
@@ -58,24 +54,24 @@ public class AccountController {
     @RequestMapping(path = "/clients/current/accounts", method = RequestMethod.POST)
     public ResponseEntity<Object> createAccount(Authentication authentication){
         String numberAccount;
-        Client client = clientRepository.findByEmail(authentication.getName());
+        Client client = clientService.findByEmail(authentication.getName());
         if (client.getAccounts().size()<3){
             do {
                 numberAccount = accountGenerator();
 
-            }while(accountRepository.existsByNumber(numberAccount));
+            }while(accountService.existsByNumber(numberAccount));
             Account account = new Account(numberAccount, LocalDate.now(), 0);
             client.addAccount(account);
-            accountRepository.save(account);
-            clientRepository.save(client);
+            accountService.save(account);
+            clientService.save(client);
             return new ResponseEntity<>("account created",HttpStatus.CREATED);
-            }else{
-                return new ResponseEntity<>("You already have 3 accounts", HttpStatus.FORBIDDEN);
-            }
+        }else{
+            return new ResponseEntity<>("You already have 3 accounts", HttpStatus.FORBIDDEN);
+        }
     }
     @RequestMapping("/clients/current/accounts")
     public List<AccountDTO> getAccountsCurrentClient(Authentication authentication) {
-        Client currentClient = clientRepository.findByEmail(authentication.getName());
+        Client currentClient = clientService.findByEmail(authentication.getName());
         return currentClient.getAccounts().stream().map(account -> new AccountDTO(account)).collect(Collectors.toList());
     }
 

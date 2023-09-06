@@ -4,15 +4,14 @@ import com.mindhub.homebanking.models.Account;
 import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.models.Transaction;
 import com.mindhub.homebanking.models.TransactionType;
-import com.mindhub.homebanking.repositories.AccountRepository;
-import com.mindhub.homebanking.repositories.ClientRepository;
-import com.mindhub.homebanking.repositories.TransactionRepository;
+import com.mindhub.homebanking.services.AccountService;
+import com.mindhub.homebanking.services.ClientService;
+import com.mindhub.homebanking.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 
@@ -22,13 +21,11 @@ import java.time.LocalDateTime;
 public class TransactionController {
 
     @Autowired
-    private ClientRepository clientRepository;
-
+    private ClientService clientService;
     @Autowired
-    private AccountRepository accountRepository;
-
+    private AccountService accountService;
     @Autowired
-    private TransactionRepository transactionRepository;
+    private TransactionService transactionService;
 
     @Transactional
     @RequestMapping(path = "/transactions", method = RequestMethod.POST)
@@ -39,9 +36,9 @@ public class TransactionController {
                                                  Authentication authentication) {
 
 
-        Client client = clientRepository.findByEmail(authentication.getName());
-        Account accountFrom = accountRepository.findByNumber(fromAccountNumber);
-        Account accountTo = accountRepository.findByNumber(toAccountNumber);
+        Client client = clientService.findByEmail(authentication.getName());
+        Account accountFrom = accountService.findByNumber(fromAccountNumber);
+        Account accountTo = accountService.findByNumber(toAccountNumber);
 
         if (fromAccountNumber.isBlank()) {
             return new ResponseEntity<>("Account number is required", HttpStatus.FORBIDDEN);
@@ -77,11 +74,9 @@ public class TransactionController {
         accountFrom.addTransaction(transactionDebit);
         accountTo.addTransaction(transactionCredit);
 
-        transactionRepository.save(transactionDebit);
-        transactionRepository.save(transactionCredit);
+        transactionService.save(transactionDebit);
+        transactionService.save(transactionCredit);
 
         return new ResponseEntity<>("Success transaction", HttpStatus.CREATED);
     }
 }
-
-

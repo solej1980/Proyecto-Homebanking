@@ -44,4 +44,15 @@ public class TransactionDTO {
     public LocalDateTime getDate() {
         return date;
     }
+
+    @Override
+    public String toString() {
+        return "TransactionDTO{" +
+                "id=" + id +
+                ", type=" + type +
+                ", amount=" + amount +
+                ", description='" + description + '\'' +
+                ", date=" + date +
+                '}';
+    }
 }

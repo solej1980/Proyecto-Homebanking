@@ -14,7 +14,7 @@ public class Account {
     @GenericGenerator(name ="native", strategy = "native")
     private long id;
     private String number;
-    private LocalDate date;
+    private LocalDate creationDate;
     private double balance;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -30,7 +30,7 @@ public class Account {
 
     public Account(String number, LocalDate date, double balance) {
         this.number = number;
-        this.date = date;
+        this.creationDate = date;
         this.balance = balance;
     }
 
@@ -54,12 +54,12 @@ public class Account {
         this.number = number;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public LocalDate getCreationDate() {
+        return creationDate;
     }
 
     public void setDate(LocalDate creationDate) {
-        this.date = date;
+        this.creationDate = creationDate;
     }
 
     public double getBalance() {
@@ -85,7 +85,7 @@ public class Account {
         return "Account{" +
                 "id=" + id +
                 ", number='" + number + '\'' +
-                ", creationDate=" + date +
+                ", creationDate=" + creationDate +
                 ", balance=" + balance +
                 ", client=" + client +
                 ", transactions=" + transactions +

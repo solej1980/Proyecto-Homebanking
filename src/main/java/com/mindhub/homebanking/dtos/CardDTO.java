@@ -64,5 +64,17 @@ public class CardDTO {
         return thruDate;
     }
 
-
+    @Override
+    public String toString() {
+        return "CardDTO{" +
+                "id=" + id +
+                ", cardHolder='" + cardHolder + '\'' +
+                ", type=" + type +
+                ", color=" + color +
+                ", number='" + number + '\'' +
+                ", cvv=" + cvv +
+                ", fromDate=" + fromDate +
+                ", thruDate=" + thruDate +
+                '}';
+    }
 }

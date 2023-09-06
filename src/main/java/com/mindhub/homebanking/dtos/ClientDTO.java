@@ -51,4 +51,17 @@ public class ClientDTO {
 
     public Set<CardDTO> getCards() { return cards;
     }
+
+    @Override
+    public String toString() {
+        return "ClientDTO{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", accounts=" + accounts +
+                ", loans=" + loans +
+                ", cards=" + cards +
+                '}';
+    }
 }
