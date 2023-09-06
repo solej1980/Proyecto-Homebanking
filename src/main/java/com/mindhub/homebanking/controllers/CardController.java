@@ -14,7 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import java.util.Random;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -35,7 +35,8 @@ public class CardController {
     }
 
     public short cvvGenerator(){
-        return Short.parseShort(String.format("%03d", (short) Math.floor(Math.random() * 1000)));
+        Random random = new Random();
+        return Short.parseShort(String.format("%03d", random.nextInt(1000)));
     }
     @RequestMapping("/clients/current/cards")
     public ResponseEntity<Object> createCard(Authentication authentication, CardType cardType, CardColor cardColor){
