@@ -52,10 +52,19 @@ public class LoanController {
     @RequestMapping(path = "/loans", method = RequestMethod.POST)
     public ResponseEntity<Object> createLoan(@RequestBody LoanApplicationDTO loanApplicationDTO, Authentication authentication) {
 
-        if(loanApplicationDTO.getPayments() == 0 || loanApplicationDTO.getToAccountNumber().isEmpty() || loanApplicationDTO.getAmount() <= 0 ) {
-            return new ResponseEntity<>("Invalid data", HttpStatus.FORBIDDEN);
+        if (authentication == null || authentication.getName() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication is required.");
         }
 
+        if(loanApplicationDTO.getToAccountNumber().isEmpty()) {
+            return new ResponseEntity<>("Number account is required", HttpStatus.FORBIDDEN);
+        }
+        if(loanApplicationDTO.getAmount() <= 0) {
+            return new ResponseEntity<>("The amount can't be less than or equal to zero", HttpStatus.FORBIDDEN);
+        }
+        if(loanApplicationDTO.getPayments() == 0) {
+            return new ResponseEntity<>("Payments can't be zero", HttpStatus.FORBIDDEN);
+        }
         List<Loan> loans = loanService.getLoans();
 
         if (loans.stream().noneMatch(loan -> loan.getId() == loanApplicationDTO.getLoanId())) {
@@ -66,8 +75,6 @@ public class LoanController {
         if ( loanApplicationDTO.getAmount() > loan.getMaxAmount()){
             return new ResponseEntity<>("Cannot exceed loan max amount", HttpStatus.FORBIDDEN);
         }
-
-
 
         Account account = accountService.findByNumber(loanApplicationDTO.getToAccountNumber());
 

@@ -41,6 +41,7 @@ public class CardController {
     @RequestMapping("/clients/current/cards")
     public ResponseEntity<Object> createCard(Authentication authentication, CardType cardType, CardColor cardColor){
         String cardNumber;
+
         if (authentication == null || authentication.getName() == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication is required.");
         }

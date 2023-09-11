@@ -34,36 +34,44 @@ public class TransactionController {
                                                  @RequestParam Double amount,
                                                  @RequestParam String description,
                                                  Authentication authentication) {
-
-
+        if (authentication == null || authentication.getName() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication is required.");
+        }
         Client client = clientService.findByEmail(authentication.getName());
-        Account accountFrom = accountService.findByNumber(fromAccountNumber);
-        Account accountTo = accountService.findByNumber(toAccountNumber);
 
         if (fromAccountNumber.isBlank()) {
-            return new ResponseEntity<>("Account number is required", HttpStatus.FORBIDDEN);
-        } else {
-            if (accountFrom == null) {
-                return new ResponseEntity<>("The account does not exist", HttpStatus.FORBIDDEN);
-            } else if (!client.getAccounts().contains(accountFrom)) {
-                return new ResponseEntity<>("Account not found in current client", HttpStatus.FORBIDDEN);
-            } else {
-                if (toAccountNumber.isBlank()) {
-                    return new ResponseEntity<>("Account number is required", HttpStatus.FORBIDDEN);
-                } else if (accountTo == null) {
-                    return new ResponseEntity<>("The account does not exist", HttpStatus.FORBIDDEN);
-                } else {
-                    if (amount <= 0) {
-                        return new ResponseEntity<>("Mount is required", HttpStatus.FORBIDDEN);
-                    } else if (description.isBlank()) {
-                        return new ResponseEntity<>("Description is required", HttpStatus.FORBIDDEN);
-                    } else if (fromAccountNumber.equals(toAccountNumber)) {
-                        return new ResponseEntity<>("Origin and destiny account have to be different", HttpStatus.FORBIDDEN);
-                    } else if (accountFrom.getBalance() < amount) {
-                        return new ResponseEntity<>("Not enough funds for the transaction", HttpStatus.FORBIDDEN);
-                    }
-                }
-            }
+            return new ResponseEntity<>("Origin account is required", HttpStatus.FORBIDDEN);
+        }
+        if (toAccountNumber.isBlank()) {
+            return new ResponseEntity<>("Destination account is required", HttpStatus.FORBIDDEN);
+        }
+        if (fromAccountNumber.equals(toAccountNumber)) {
+            return new ResponseEntity<>("Origin and destiny account have to be different", HttpStatus.FORBIDDEN);
+        }
+        if (amount.isNaN()) {
+            return new ResponseEntity<>("The amount is required", HttpStatus.FORBIDDEN);
+        }
+        if (description.isBlank()) {
+            return new ResponseEntity<>("Description is required", HttpStatus.FORBIDDEN);
+        }
+        Account accountFrom = accountService.findByNumber(fromAccountNumber);
+        if (accountFrom == null) {
+            return new ResponseEntity<>("Origin account not found", HttpStatus.FORBIDDEN);
+        }
+
+        Account accountTo = accountService.findByNumber(toAccountNumber);
+        if (accountTo == null) {
+            return new ResponseEntity<>("Destination account not found", HttpStatus.FORBIDDEN);
+        }
+
+        if (!accountFrom.getClient().getEmail().equals(authentication.getName())) {
+            return new ResponseEntity<>("The origin account doesn't belong to you", HttpStatus.FORBIDDEN);
+        }
+        if (amount <= 0) {
+            return new ResponseEntity<>("The amount can't be less than or equal to zero", HttpStatus.FORBIDDEN);
+        }
+        if (accountFrom.getBalance() < amount) {
+            return new ResponseEntity<>("Insufficient funds", HttpStatus.FORBIDDEN);
         }
         Transaction transactionDebit = new Transaction(TransactionType.DEBIT, amount, description + " " + toAccountNumber, LocalDateTime.now());
         Transaction transactionCredit = new Transaction(TransactionType.CREDIT, amount, description + " " + fromAccountNumber, LocalDateTime.now());
@@ -78,5 +86,7 @@ public class TransactionController {
         transactionService.save(transactionCredit);
 
         return new ResponseEntity<>("Success transaction", HttpStatus.CREATED);
+
+
     }
 }

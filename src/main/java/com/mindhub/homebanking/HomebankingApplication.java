@@ -22,6 +22,7 @@ public class HomebankingApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(HomebankingApplication.class);
 	}
+/*
 	@Bean
 	public CommandLineRunner initData(ClientService clientService, AccountService accountService, CardService cardService, TransactionService transactionService, LoanService loanService, ClientLoanService clientLoanService){
 		return (args -> {
@@ -106,5 +107,5 @@ public class HomebankingApplication {
 		});
 
 	}
-
+*/
 }

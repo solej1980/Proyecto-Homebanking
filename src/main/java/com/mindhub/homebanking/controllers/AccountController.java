@@ -53,7 +53,11 @@ public class AccountController {
 
     @RequestMapping(path = "/clients/current/accounts", method = RequestMethod.POST)
     public ResponseEntity<Object> createAccount(Authentication authentication){
+
         String numberAccount;
+        if (authentication == null || authentication.getName() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication is required.");
+        }
         Client client = clientService.findByEmail(authentication.getName());
         if (client.getAccounts().size()<3){
             do {
